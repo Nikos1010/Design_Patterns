@@ -1,2 +1,5 @@
-# Design_Patterns
-Here, I will explain about design patterns in JS
+<center>
+	<h1>
+	Design Patterns
+	</h1>
+</center>
