@@ -1,0 +1,15 @@
+/node_modules
+
+
+*.env
+*.txt
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+.DS_Store
+Thumbs.db
