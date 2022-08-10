@@ -1,5 +1,6 @@
 //Singleton
 let instance;
+
 class Bank {
     constructor({ 
         bankCapital,
@@ -12,7 +13,22 @@ class Bank {
         instance = this;
         this.name = name;
         this.bankCapital = bankCapital;
-        this.infoBankAccount = infoBankAccount;
+        this.infoBankAccount = [{ quantityAccount: 0 }, infoBankAccount];
+    }
+
+    bankInformation() {
+        const objectToArray = [this];
+        return objectToArray;
+    }
+
+    addInfoBankAccount({id, nameClient, quantityMoney}) {
+        const info = {id, nameClient, quantityMoney};
+        this.infoBankAccount.push(info);
+        this.incrementAccounts();
+    }
+
+    incrementAccounts () {
+        this.infoBankAccount[0].quantityAccount++;
     }
 }
 
