@@ -12,8 +12,11 @@ class Bank {
         }
         instance = this;
         this.name = name;
-        this.bankCapital = bankCapital;
-        this.infoBankAccount = [{ quantityAccount: 0 }, infoBankAccount];
+        this.infoBank = { 
+            quantityAccount: 0, 
+            bankCapital: bankCapital 
+        };
+        this.infoBankAccount = infoBankAccount;
     }
 
     bankInformation() {
@@ -24,11 +27,12 @@ class Bank {
     addInfoBankAccount({id, nameClient, quantityMoney}) {
         const info = {id, nameClient, quantityMoney};
         this.infoBankAccount.push(info);
-        this.incrementAccounts();
+        this.incrementAccountsAndCapital(quantityMoney);
     }
 
-    incrementAccounts () {
-        this.infoBankAccount[0].quantityAccount++;
+    incrementAccountsAndCapital (money) {
+        this.infoBank.quantityAccount++;
+        this.infoBank.bankCapital += money;
     }
 }
 
