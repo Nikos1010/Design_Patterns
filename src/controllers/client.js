@@ -1,10 +1,6 @@
 const ClientBuilder = require('../models/Builder/Builder.js');
-const Client = require('../models/Prototype/Client.js');
+const ProxyClient = require('../Structural/Proxy/proxy.js');
 
-exports.postAddClient = (req, res) => {
-    // const { name, typePerson, identity } = req.body;
-    // const infoClient = { name, typePerson, identity };
-}
 
 exports.getClients = (req, res) => {
     const clientOne = new ClientBuilder()
@@ -15,7 +11,10 @@ exports.getClients = (req, res) => {
         .withNameClient('Uver')
         .build();
     
-    console.log(clientOne);
+    const proxyOne = new Proxy(clientOne, ProxyClient);
+    proxyOne.nameClient;
+    proxyOne.identity = '5894';
+    proxyOne.identity;
 
     const clientTwo = new ClientBuilder()
         .withNameClient('Andrea')
@@ -23,7 +22,11 @@ exports.getClients = (req, res) => {
         .withTypePerson('Juridica')
         .build();
 
-    console.log(clientTwo);
+    const proxyTwo = new Proxy(clientTwo, ProxyClient);
+    proxyTwo.nameClient = 'Andres';
+    proxyTwo.typePerson = 'Asdadfsad';
+    proxyTwo.identity = "1256";
+    proxyTwo.identity;
 
     const allClients = [clientOne, clientTwo];
     res.json(allClients);

@@ -22,7 +22,7 @@ Los patrones creacionales proporcionan varios mecanismos de creación de objetos
 Podemos encontrar estos patrones:
 - [Singleton](https://github.com/Nikos1010/Design_Patterns#singleton)
 - [Prototype](https://github.com/Nikos1010/Design_Patterns#prototype)
-- [Builder](https://github.com/Nikos1010/Design_Patterns#)
+- [Builder](https://github.com/Nikos1010/Design_Patterns#builder)
 - [Factory](https://github.com/Nikos1010/Design_Patterns#factory)
 - [Abstract Factory](https://github.com/Nikos1010/Design_Patterns#abstract-factory)
 
@@ -483,6 +483,78 @@ El patrón builder nos permite hacer una concatenacion mediante puntos, esto se 
 
 # Patrones Estructurales
 Los patrones estructurales explican cómo ensamblar objetos y clases en estructuras más grandes, a la vez que se mantiene la flexibilidad y eficiencia de estas estructuras.
+
+- [Proxy](https://github.com/Nikos1010/Design_Patterns#proxy)
+
+##Proxy
+Es un sustituto de otro objeto. En otras palabras el que recibe los datos y decide que se harán con estos, si los manejara el objeto original, o se rechazaran los datos, o haran otro proceso.
+
+Tomemos el ejemplo de cliente, y ahora apliquemos un Proxy para poder comprobar que el nombre ingresado tenga mas de 2 caracteres al igual que la identificacion, que el tipo de persona aceptado solo sea Natural o Juridica, mostremoslo en JS:
+
+```javascript
+//proxy.js
+const ProxyClient = {
+    set: (obj, prop, value) => {
+        if (prop === "nameClient" && value.length < 2) {
+            console.log(`You need to provide a valid name.`);
+        } else if (prop === "identity" && value.length < 2) {
+            console.log(`You need to provide a valid identity.`);
+        } else if (prop === "typePerson") {
+            if (value !== "Natural" || value !== "Juridica"){
+                console.log(
+                    `You need to provide a valid type person ('Natural' or 'Juridica').`
+                );
+            }
+        } else {
+            console.log(`Changed ${prop} from ${obj[prop]} to ${value}.`);
+            obj[prop] = value;
+        }
+    },
+
+    get: (obj, prop) => {
+        if (!obj[prop]) {
+            console.log(
+                `Hmm.. this property doesn't seem to exist on the target object`
+            );
+        } else {
+            console.log(`The value of ${prop} is ${obj[prop]}`);
+        }
+    }
+}
+
+module.exports = ProxyClient;
+
+//client.js
+const ClientBuilder = require('../models/Builder/Builder.js');
+const ProxyClient = require('../Structural/Proxy/proxy.js');
+
+const clientOne = new ClientBuilder()
+	.withIdentity('12345')
+	.withAddress('Street 34th')
+	.withCellphoneNumber('2689564')
+	.withTypePerson('Natural')
+	.withNameClient('Uver')
+	.build();
+
+const proxyOne = new Proxy(clientOne, ProxyClient);
+proxyOne.nameClient;
+proxyOne.identity = '5894';
+proxyOne.identity;
+
+const clientTwo = new ClientBuilder()
+	.withNameClient('Andrea')
+	.withIdentity('95687')
+	.withTypePerson('Juridica')
+	.build();
+
+const proxyTwo = new Proxy(clientTwo, ProxyClient);
+proxyTwo.nameClient = 'Andres';
+proxyTwo.typePerson = 'Asdadfsad';
+proxyTwo.identity = "1256";
+proxyTwo.identity;
+```
+
+Este proxy nos esta ayudando a hacer una validación, tanto para obtener datos de clientes, como para configurar estos datos del cliente, cuando instanciamos el Proxy le pasamos dos parametros, el objeto que el Proxy sustituira y el segundo parametro son los metodos del proxy que se van a llevar a cabo, este es un ejemplo donde solo se obtendra ciertos valores, y se cambiaran si cumple con los requisitos del Proxy.
 
 # Patrones de Comportamiento
 Los patrones de comportamiento tratan con algoritmos y la asignación de responsabilidades entre objetos.
