@@ -486,7 +486,7 @@ Los patrones estructurales explican cómo ensamblar objetos y clases en estructu
 
 - [Proxy](https://github.com/Nikos1010/Design_Patterns#proxy)
 
-##Proxy
+## Proxy
 Es un sustituto de otro objeto. En otras palabras el que recibe los datos y decide que se harán con estos, si los manejara el objeto original, o se rechazaran los datos, o haran otro proceso.
 
 Tomemos el ejemplo de cliente, y ahora apliquemos un Proxy para poder comprobar que el nombre ingresado tenga mas de 2 caracteres al igual que la identificacion, que el tipo de persona aceptado solo sea Natural o Juridica, mostremoslo en JS:
@@ -558,3 +558,10 @@ Este proxy nos esta ayudando a hacer una validación, tanto para obtener datos d
 
 # Patrones de Comportamiento
 Los patrones de comportamiento tratan con algoritmos y la asignación de responsabilidades entre objetos.
+
+- [Observer](https://github.com/Nikos1010/Design_Patterns#observer)
+- [Command](https://github.com/Nikos1010/Design_Patterns#command)
+
+## Observer
+
+## Command
