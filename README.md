@@ -14,6 +14,7 @@ Encontramos tres familias de patrones:
 Link de [refactoring guru](https://refactoring.guru/es/design-patterns/catalog).
 Link de un [git hub](https://github.com/damiancipolat/Nodejs-Design-Pattern)
 Link de [Patternsdev](https://www.patterns.dev/posts/classic-design-patterns/)
+Link de [medium](https://medium.com/@jesusmurfontanals/builder-pattern-con-javascript-1ee3f9e2b7e9)
 
 # Patrones Creacionales
 Los patrones creacionales proporcionan varios mecanismos de creación de objetos que incrementan la flexibilidad y la reutilización del código existente.
@@ -371,6 +372,15 @@ const creditCardOne = abstractCardFactory.getCard("credit", { typeCard: "Credit"
 const allCards = [debitCardOne, creditCardOne];
 ```
 Para crear una tarjeta, debemos primero registrar el tipo de tarjetas que hay, despues de registrarla con la función `registerCard`, ya podemos crear objetos con la función `getCard`, y asi de una manera sencilla podemos crear objetos que tengan cosas en comun.
+
+## Builder
+Es una manera de crear objetos complejos paso a paso, para asi elegir que crear o no de un objeto, podemos crear objetos difrentes, desde que los objetos tengan las propiedades configuradas en el builder.
+
+Asi es un ejemplo del patrón builder en JS:
+
+```javascript
+
+```
 
 # Patrones Estructurales
 Los patrones estructurales explican cómo ensamblar objetos y clases en estructuras más grandes, a la vez que se mantiene la flexibilidad y eficiencia de estas estructuras.
