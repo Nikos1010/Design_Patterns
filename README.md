@@ -19,7 +19,7 @@ Link de [Patternsdev](https://www.patterns.dev/posts/classic-design-patterns/)
 Los patrones creacionales proporcionan varios mecanismos de creación de objetos que incrementan la flexibilidad y la reutilización del código existente.
 
 Podemos encontrar estos patrones:
-- [Singleton](https://github.com/Nikos1010/Design_Patterns#)
+- [Singleton](https://github.com/Nikos1010/Design_Patterns#singleton)
 - [Prototype](https://github.com/Nikos1010/Design_Patterns#)
 - [Builder](https://github.com/Nikos1010/Design_Patterns#)
 - [Abstract Factory](https://github.com/Nikos1010/Design_Patterns#)
@@ -28,7 +28,7 @@ Podemos encontrar estos patrones:
 ## Singleton
 Permite asegurarnos de que una clase tenga una única instancia, a la vez que proporciona un punto de acceso global a dicha instancia. 
 
-Para entenderlo mejor, pongamos este ejemplo sencillo: 
+Para entenderlo mejor, pongamos este ejemplo sencillo:
 
 Necesitamos crear una clase para un banco, en donde guardaremos el nombre del banco, y otra informacion del banco, como lo es la cantidad de cuentas bancarias y el capital que tiene el banco, esto va aumentando según el dinero que ingresen de las cuentas. También ingresaremos informacion de las cuentas bancarias, como los id de las cuentas y el dinero que estas tienen dentro.
 
@@ -39,7 +39,7 @@ entonces escribiendo codigo se veria asi en JS:
 let instance;
 
 class Bank {
-    constructor({ 
+    constructor({
         bankCapital,
         name,
         infoBankAccount = [], // [{"id": "1234", "money": 500}]
@@ -49,9 +49,9 @@ class Bank {
         }
         instance = this;
         this.name = name;
-        this.infoBank = { 
-            quantityAccount: 0, 
-            bankCapital: bankCapital 
+        this.infoBank = {
+            quantityAccount: 0,
+            bankCapital: bankCapital
         };
         this.infoBankAccount = infoBankAccount;
     }
@@ -85,7 +85,53 @@ module.exports = nicolasBank;
 
 Para crear el Singleton en JS, tenemos que utilizar una variable por fuera de la clase, esta se encargara de determinar si se esta volviendo a instanciar la clase, en caso de que ocurra, mostrara un error donde dira que solo se puede instanciar una vez la clase.
 
-Tambien podemos observar al finar el `Object.freeze`, este se encargara de congelar el objeto y que sus atributos primarios sean congelados, en este caso se congela solo el nombre, por lo tanto no puedo cambiarlo de como esta configurado en la instancia, los otros objetos pueden mutar, por lo tanto si puedo agregar o eliminar las propiedades que esten dentro de estos objectos.
+Tambien podemos observar al finar el `Object.freeze`, este se encargara de congelar el objeto y que sus atributos primarios sean congelados, en este caso se congela solo el nombre, por lo tanto no puedo cambiarlo de como esta configurado en la instancia, los otros objetos pueden mutar, por lo tanto si puedo agregar o eliminar las propiedades que esten dentro de estos objectos, tambien exportamos la clase, para manipularla en el futuro.
+
+## Prototype
+Permite copiar objetos existentes sin que el código dependa de sus clases.
+
+Como podemos observar, es crear copias en diferentes espacios de memoria, cada copia tendra las mismas funciones que el objeto original, también podemos hacer herencia de objetos y se notara el prototype. Observemos este ejemplo:
+
+Un banco tiene muchas cuentas bancarias de distintos clientes, con diferente cantidad de dinero, diferente Ids e informacion de los clientes, como lo es su nombre, asi se veria en JS.
+
+```javascript
+//BankAccount.js
+class BankAccount {
+    constructor({ quantityMoney, nameClient, id }) {
+        this.quantityMoney = quantityMoney;
+        this.nameClient = nameClient;
+        this.id = id;
+    }
+
+    quantityMoney() {
+        return this.quantityMoney;
+    }
+
+    depositMoney(money) {
+        return (this.quantityMoney += money);
+    }
+}
+
+module.exports = BankAccount;
+
+//bank.js
+const BankAccount = require('../models/Prototype/BankAccount.js');
+
+const bankAccountOne = new BankAccount({
+	quantityMoney: 500,
+	nameClient:  "Leosh",
+	id: "1"
+});
+Bank.addInfoBankAccount(bankAccountOne);
+const bankAccountTwo = new BankAccount({
+	quantityMoney: 800,
+	nameClient: "Camil",
+	id: "2"
+});
+Bank.addInfoBankAccount(bankAccountTwo);
+Bank.infoBankAccount;
+```
+Como podemos observar podemos instanciar varias veces la clase, sin ningún tipo de error, siempre y cuando coloquemos la información colocada sea la misma que utilizaremos en la clase, lo unico que ha cambiado de todo esto son los valores de las propiedades, el resto es como una copia del original.
 
 # Patrones Estructurales
 Los patrones estructurales explican cómo ensamblar objetos y clases en estructuras más grandes, a la vez que se mantiene la flexibilidad y eficiencia de estas estructuras.

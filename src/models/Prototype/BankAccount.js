@@ -1,7 +1,7 @@
 class BankAccount {
-    constructor({ quantityMoney, client, id }) {
+    constructor({ quantityMoney, nameClient, id }) {
         this.quantityMoney = quantityMoney;
-        this.client = client;
+        this.nameClient = nameClient;
         this.id = id;
     }
 
@@ -13,3 +13,5 @@ class BankAccount {
         return (this.quantityMoney += money);
     }
 }
+
+module.exports = BankAccount;
