@@ -1,5 +1,7 @@
+const AbstractCardFactory = require('../models/Factory/AbstractFactory.js');
 const Cardfactory = require('../models/Factory/Factory.js');
 const BankAccount = require('../models/Prototype/BankAccount.js');
+const { DebitCard, CreditCard } = require('../models/Prototype/Cards.js');
 const Bank = require('../models/Singleton/Bank.js');
 
 const { Generic } = require('./Exception.js');
@@ -35,3 +37,17 @@ exports.getInfoBankAccount = (req, res) => {
     res.json(Bank.infoBankAccount);
 }
 
+exports.getCards = (req, res) => {
+    const abstractCardFactory = new AbstractCardFactory();
+    abstractCardFactory.registerCard("debit", DebitCard);
+    abstractCardFactory.registerCard("credit", CreditCard);
+
+    const debitCardOne = abstractCardFactory.getCard("debit", {
+        typeCard: "Debit",
+    });
+    const creditCardOne = abstractCardFactory.getCard("credit", {
+        typeCard: "Credit",
+    });
+    const allCards = [debitCardOne, creditCardOne];
+    res.json(allCards);
+}
