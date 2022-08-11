@@ -379,8 +379,107 @@ Es una manera de crear objetos complejos paso a paso, para asi elegir que crear 
 Asi es un ejemplo del patrón builder en JS:
 
 ```javascript
+//Client.js
+class Client {
+    constructor(
+        nameClient,
+        typePerson = "Natural",
+        identity,
+        cellphoneNumber,
+        address
+    ) {
+        this.nameClient = nameClient;
+        this.typePerson = typePerson;
+        this.identity = identity;
+        this.cellphoneNumber = cellphoneNumber;
+        this.address = address;
+    }
 
+    setNameClient(nameClient) {
+        this.nameClient = nameClient;
+    }
+
+    setTypePerson(typePerson) {
+        this.typePerson = typePerson;
+    }
+
+    setIdentity(identity) {
+        this.identity = identity;
+    }
+
+    setCellphoneNumber(cellphoneNumber) {
+        this.cellphoneNumber = cellphoneNumber;
+    }
+
+    setAddress(address) {
+        this.address = address;
+    }
+}
+
+module.exports = Client;
+
+//Builder.js
+const Client = require('../Prototype/Client.js');
+
+class ClientBuilder {
+    constructor() {
+        this.client = new Client();
+    }
+
+    withNameClient(nameClient) {
+        this.client.setNameClient(nameClient);
+        return this;
+    }
+
+    withTypePerson(typePerson) {
+        this.client.setTypePerson(typePerson);
+        return this;
+    }
+
+    withIdentity(identity) {
+        this.client.setIdentity(identity);
+        return this;
+    }
+
+    withCellphoneNumber(cellphoneNumber) {
+        this.client.setCellphoneNumber(cellphoneNumber);
+        return this;
+    }
+
+    withAddress(address) {
+        this.client.setAddress(address);
+        return this;
+    }
+
+    build() {
+        return this.client;
+    }
+}
+
+module.exports = ClientBuilder;
+
+//client.js
+const ClientBuilder = require('../models/Builder/Builder.js');
+
+const clientOne = new ClientBuilder()
+	.withIdentity('12345')
+	.withAddress('Street 34th')
+	.withCellphoneNumber('2689564')
+	.withTypePerson('Natural')
+	.withNameClient('Uver')
+	.build();
+
+	console.log(clientOne);
+
+const clientTwo = new ClientBuilder()
+	 .withNameClient('Andrea')
+	.withIdentity('95687')
+	.withTypePerson('Juridica')
+	.build();
+
+console.log(clientTwo);
 ```
+El patrón builder nos permite hacer una concatenacion mediante puntos, esto se logra llamando las funciones creadas en el Builder, cada funcion configurara una propiedad de la clase, esto se hace con el fin de que sea mas legible el codigo, y asi darse cuenta que es lo que se agrega cuando se crea una clase, para construir la instancia se llama la función `build()`.
 
 # Patrones Estructurales
 Los patrones estructurales explican cómo ensamblar objetos y clases en estructuras más grandes, a la vez que se mantiene la flexibilidad y eficiencia de estas estructuras.
