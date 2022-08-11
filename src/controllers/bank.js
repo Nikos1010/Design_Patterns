@@ -1,5 +1,7 @@
+const Cardfactory = require('../models/Factory/Factory.js');
 const BankAccount = require('../models/Prototype/BankAccount.js');
 const Bank = require('../models/Singleton/Bank.js');
+
 const { Generic } = require('./Exception.js');
 
 exports.getInfoBank = (req, res) => {
@@ -8,17 +10,26 @@ exports.getInfoBank = (req, res) => {
 }
 
 exports.getInfoBankAccount = (req, res) => {
-    const bankAccountOne = new BankAccount({
+    const cardFactory = new Cardfactory();
+
+    const infoOne = {
         quantityMoney: 500,
-        nameClient:  "Leosh",
-        id: "1"
-    });
+        client: {
+            name: "Leosh",
+            typeCard: cardFactory.createCard({typeCard: 'Debit'}),
+        },
+        id: "1",
+    };
+    const bankAccountOne = new BankAccount(infoOne);
     Bank.addInfoBankAccount(bankAccountOne);
     
     const bankAccountTwo = new BankAccount({
         quantityMoney: 800,
-        nameClient: "Camil",
-        id: "2"
+        client: {
+            name: "Camil",
+            typeCard: cardFactory.createCard({ typeCard: "Credit" }),
+        },
+        id: "2",
     });
     Bank.addInfoBankAccount(bankAccountTwo);
     res.json(Bank.infoBankAccount);

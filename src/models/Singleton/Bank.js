@@ -24,8 +24,8 @@ class Bank {
         return objectToArray;
     }
 
-    addInfoBankAccount({id, nameClient, quantityMoney}) {
-        const info = {id, nameClient, quantityMoney};
+    addInfoBankAccount({id, client, quantityMoney}) {
+        const info = { id, client, quantityMoney };
         this.infoBankAccount.push(info);
         this.incrementAccountsAndCapital(quantityMoney);
     }

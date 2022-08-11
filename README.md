@@ -20,10 +20,9 @@ Los patrones creacionales proporcionan varios mecanismos de creación de objetos
 
 Podemos encontrar estos patrones:
 - [Singleton](https://github.com/Nikos1010/Design_Patterns#singleton)
-- [Prototype](https://github.com/Nikos1010/Design_Patterns#)
+- [Prototype](https://github.com/Nikos1010/Design_Patterns#prototype)
 - [Builder](https://github.com/Nikos1010/Design_Patterns#)
-- [Abstract Factory](https://github.com/Nikos1010/Design_Patterns#)
-- [Factory Method](https://github.com/Nikos1010/Design_Patterns#)
+- [Factory](https://github.com/Nikos1010/Design_Patterns#factory)
 
 ## Singleton
 Permite asegurarnos de que una clase tenga una única instancia, a la vez que proporciona un punto de acceso global a dicha instancia. 
@@ -39,7 +38,7 @@ entonces escribiendo codigo se veria asi en JS:
 let instance;
 
 class Bank {
-    constructor({
+    constructor({ 
         bankCapital,
         name,
         infoBankAccount = [], // [{"id": "1234", "money": 500}]
@@ -49,9 +48,9 @@ class Bank {
         }
         instance = this;
         this.name = name;
-        this.infoBank = {
-            quantityAccount: 0,
-            bankCapital: bankCapital
+        this.infoBank = { 
+            quantityAccount: 0, 
+            bankCapital: bankCapital 
         };
         this.infoBankAccount = infoBankAccount;
     }
@@ -61,8 +60,8 @@ class Bank {
         return objectToArray;
     }
 
-    addInfoBankAccount({id, nameClient, quantityMoney}) {
-        const info = {id, nameClient, quantityMoney};
+    addInfoBankAccount({id, client, quantityMoney}) {
+        const info = { id, client, quantityMoney };
         this.infoBankAccount.push(info);
         this.incrementAccountsAndCapital(quantityMoney);
     }
@@ -97,9 +96,9 @@ Un banco tiene muchas cuentas bancarias de distintos clientes, con diferente can
 ```javascript
 //BankAccount.js
 class BankAccount {
-    constructor({ quantityMoney, nameClient, id }) {
+    constructor({ quantityMoney, client, id }) {
         this.quantityMoney = quantityMoney;
-        this.nameClient = nameClient;
+        this.client = client;
         this.id = id;
     }
 
@@ -132,6 +131,128 @@ Bank.addInfoBankAccount(bankAccountTwo);
 Bank.infoBankAccount;
 ```
 Como podemos observar podemos instanciar varias veces la clase, sin ningún tipo de error, siempre y cuando coloquemos la información colocada sea la misma que utilizaremos en la clase, lo unico que ha cambiado de todo esto son los valores de las propiedades, el resto es como una copia del original.
+
+## Factory
+Podemos crear objetos mediante una interfaz de fabrica, sin necesidad de especificar una clase como concreta, antes por el contrario dependiendo el valor de la propiedad creara una clase especifica. Esto se hace con el fin de no utilizar tantas veces la palabra reservada `new`.
+
+Observemos el siguiente ejemplo:
+Ya sabiendo sobre las cuentas bancarias, tambien podemos decir que segun la cuenta bancaria, se habilitara un tipo de tarjeta, que puede ser credito o debito, aplicaremos una fabrica para que se puedan crear las instacias de estas sin necesidad de estar llamando constantemente la palabra reservada `new`.
+
+```javascript
+//Card.js
+class CreditCard {
+    constructor({ typeCard }) {
+        this.typeCard = typeCard;
+        this.amountOfMoneyInAccount = 0;
+        this.amountOfMoneyOwed = 0;
+    }
+
+    withdrawCash(quantityCash) {
+        if (quantityCash > this.amountOfMoneyInAccount) {
+            const err = {
+                msg: `You cannot withdraw that amount of money, ask for more money.`,
+            };
+            return err;
+        } else {
+            this.amountOfMoneyInAccount -= quantityCash;
+        }
+    }
+
+    borrowingCash(quantityCash) {
+        this.amountOfMoneyInAccount = quantityCash;
+        this.amountOfMoneyOwed = Math.round(quantityCash * 1.15);
+    }
+
+    totalDebt() {
+        return this.amountOfMoneyOwed;
+    }
+
+    totalMoneyinAccount() {
+        return this.amountOfMoneyInAccount;
+    }
+
+    payCredit(money) {
+        this.amountOfMoneyOwed -= money;
+    }
+}
+
+class DebitCard {
+    constructor({ typeCard }) {
+        this.typeCard = typeCard;
+        this.amountOfMoneyInAccount = 0;
+    }
+
+    withdrawCash(quantityCash) {
+        if (quantityCash > this.amountOfMoneyInAccount) {
+            const err = {
+                msg: `You cannot withdraw that amount of money, ask for more money.`,
+            };
+            return err;
+        } else {
+            this.amountOfMoneyInAccount -= quantityCash;
+        }
+    }
+
+    totalMoneyinAccount() {
+        return this.amountOfMoneyInAccount;
+    }
+}
+
+exports.DebitCard = DebitCard;
+exports.CreditCard = CreditCard;
+
+//Factory.js
+const { DebitCard, CreditCard } = require('../Prototype/Cards.js');
+
+class Cardfactory {
+    constructor() {
+        this.cardClass = DebitCard;
+    }
+
+    createCard (options) {
+        switch(options.typeCard) {
+            case "Credit":
+                this.cardClass = CreditCard;
+                break;
+            case "Debit":
+                this.cardClass = DebitCard;
+                break;
+        }
+
+        return new this.cardClass(options);
+    }
+
+}
+
+module.exports = Cardfactory;
+
+//bank.js
+const Cardfactory = require('../models/Factory/Factory.js');
+const BankAccount = require('../models/Prototype/BankAccount.js');
+
+const cardFactory = new Cardfactory();
+
+    const infoOne = {
+        quantityMoney: 500,
+        client: {
+            name: "Leosh",
+            typeCard: cardFactory.createCard({typeCard: 'Debit'}),
+        },
+        id: "1",
+    };
+    const bankAccountOne = new BankAccount(infoOne);
+
+    const bankAccountTwo = new BankAccount({
+        quantityMoney: 800,
+        client: {
+            name: "Camil",
+            typeCard: cardFactory.createCard({ typeCard: "Credit" }),
+        },
+        id: "2",
+    });
+```
+
+Lo primero que hacemos es crear las clases de las tarjetas, que sera una clase para tarjeta de debito y una para tarjeta de credito. Despues de esto crearemos la clase fabrica, en esta haremos una funcion `createCard` para crear los objetos, aqui se decidira segun el `typeCard` que tipo de clase se instanciara. Ya por ultimo simplemente se instancia una vez la fabrica, y cada vez que se necesite instanciar un objeta se llama la funcion de la fabrica. Ej: Primero se instancia `const cardFactory = new Cardfactory();`, despues se llama `typeCard: cardFactory.createCard({ typeCard: "Credit" })`.
 
 # Patrones Estructurales
 Los patrones estructurales explican cómo ensamblar objetos y clases en estructuras más grandes, a la vez que se mantiene la flexibilidad y eficiencia de estas estructuras.

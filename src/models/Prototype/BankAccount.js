@@ -1,7 +1,7 @@
 class BankAccount {
-    constructor({ quantityMoney, nameClient, id }) {
+    constructor({ quantityMoney, client, id }) {
         this.quantityMoney = quantityMoney;
-        this.nameClient = nameClient;
+        this.client = client;
         this.id = id;
     }
 
