@@ -718,3 +718,86 @@ bankAccountFour.depositMoney(200);
 Como podemos analizar en el anterior ejercicio, tenemos unos observadores que se encargaran de estar constantemente observando los cambios del objeto, cada que hay un cambio estos notificaran a otro objeto (En el ejemplo se muestra por consola), para que el observador vigile, debe estar suscrito al sujeto a vigilar, si no, nunca lo vigilara.
 
 ## Command
+EL patrón Command convierte una solicitud en un objeto independiente que contiene información sobre la solicitud. Esta transformación te permite parametrizar los métodos con diferentes solicitudes, retrasar o poner en cola la ejecución de una solicitud y soportar operaciones que no se pueden realizar.
+> Copiado de [refactory guru](https://refactoring.guru/es/design-patterns/command)
+
+```javascript
+//BankAccount.js
+class BankAccount {
+    constructor({ client, id }) {
+        this.client = client;
+        this.id = id;
+        this.accountMoney = 0;
+        this.movementHistory = [];
+    }
+    #quantityMoney;
+
+    getBalance() {
+        return this.#quantityMoney;
+    }
+
+    setBalance(val) {
+        this.#quantityMoney = val;
+    }
+
+    executeCommand(command) {
+        this.accountMoney = command.execute(this.accountMoney);
+        this.movementHistory.push(command);
+    }
+
+    undo() {
+        const command = this.movementHistory.pop();
+        this.accountMoney = command.undo(this.accountMoney);
+    }
+}
+
+module.exports = BankAccount;
+
+//Comand.js
+class DepositMoney {
+    constructor(valueToAdd) {
+        this.valueToAdd = valueToAdd;
+    }
+
+    execute(currentValue) {
+        return currentValue + this.valueToAdd;
+    }
+
+    undo (currentValue) {
+        return currentValue - this.valueToAdd;
+    }
+}
+
+class WithdrawMoney {
+    constructor(valueToSubstract) {
+        this.valueToSubstract = valueToSubstract;
+    }
+
+    execute(currentValue) {
+        return currentValue - this.valueToSubstract;
+    }
+
+    undo(currentValue) {
+        return currentValue + this.valueToSubstract;
+    }
+}
+
+exports.DepositMoney = DepositMoney;
+exports.WithdrawMoney = WithdrawMoney;
+
+//bank.js
+const { DepositMoney, WithdrawMoney } = require('../Behavioral/Command/Command.js');
+const BankAccount = require('../models/Prototype/BankAccount.js');
+
+const Noith = new BankAccount({
+	client: {
+		name: "Uver",
+	},
+	id: "2",
+});
+Noith.executeCommand(new DepositMoney(500));
+Noith.executeCommand(new WithdrawMoney(100));
+console.log(Noith);
+Noith.undo();
+console.log(Noith);
+```

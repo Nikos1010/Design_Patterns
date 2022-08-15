@@ -1,3 +1,4 @@
+const { DepositMoney, WithdrawMoney } = require('../Behavioral/Command/Command.js');
 const BankAccountSubject = require('../Behavioral/Observer/BankAccountSubject.js');
 const { Observer } = require('../Behavioral/Observer/ObserverList.js');
 const AbstractCardFactory = require('../models/Factory/AbstractFactory.js');
@@ -93,4 +94,19 @@ exports.getObservers = (req, res) => {
     const allBankAccount = [bankAccountThree.client, bankAccountFour.client];
 
     res.json(allBankAccount);
+}
+
+exports.getInfoMovements = (req, res) => {
+    const Noith = new BankAccount({
+        client: {
+            name: "Uver",
+        },
+        id: "2",
+    });
+    Noith.executeCommand(new DepositMoney(500));
+    Noith.executeCommand(new WithdrawMoney(100));
+    console.log(Noith);
+    Noith.undo();
+    console.log(Noith);
+    res.json(Noith);
 }
