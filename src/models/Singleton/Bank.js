@@ -2,19 +2,19 @@
 let instance;
 
 class Bank {
-    constructor({ 
+    constructor({
         bankCapital,
         name,
-        infoBankAccount = [], // [{"id": "1234", "money": 500}]
+        infoBankAccount = [], //  [{"id": "1234", "client": "{}"}]
     }) {
-        if(instance) {
+        if (instance) {
             throw new Error("You can only create one instance!");
         }
         instance = this;
         this.name = name;
-        this.infoBank = { 
-            quantityAccount: 0, 
-            bankCapital: bankCapital 
+        this.infoBank = {
+            quantityAccount: 0,
+            bankCapital: bankCapital,
         };
         this.infoBankAccount = infoBankAccount;
     }
@@ -24,15 +24,14 @@ class Bank {
         return objectToArray;
     }
 
-    addInfoBankAccount({id, client, quantityMoney}) {
-        const info = { id, client, quantityMoney };
+    addInfoBankAccount({ id, client }) {
+        const info = { id, client };
         this.infoBankAccount.push(info);
-        this.incrementAccountsAndCapital(quantityMoney);
+        this.incrementAccounts();
     }
 
-    incrementAccountsAndCapital (money) {
+    incrementAccounts() {
         this.infoBank.quantityAccount++;
-        this.infoBank.bankCapital += money;
     }
 }
 

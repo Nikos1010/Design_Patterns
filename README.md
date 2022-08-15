@@ -27,11 +27,11 @@ Podemos encontrar estos patrones:
 - [Abstract Factory](https://github.com/Nikos1010/Design_Patterns#abstract-factory)
 
 ## Singleton
-Permite asegurarnos de que una clase tenga una única instancia, a la vez que proporciona un punto de acceso global a dicha instancia. 
+Permite asegurarnos de que una clase tenga una única instancia, a la vez que proporciona un punto de acceso global a dicha instancia.
 
 Para entenderlo mejor, pongamos este ejemplo sencillo:
 
-Necesitamos crear una clase para un banco, en donde guardaremos el nombre del banco, y otra informacion del banco, como lo es la cantidad de cuentas bancarias y el capital que tiene el banco, esto va aumentando según el dinero que ingresen de las cuentas. También ingresaremos informacion de las cuentas bancarias, como los id de las cuentas y el dinero que estas tienen dentro.
+Necesitamos crear una clase para un banco, en donde guardaremos el nombre del banco, y otra informacion del banco, como lo es la cantidad de cuentas bancarias y el capital que tiene el banco de una manera libre. También ingresaremos informacion de las cuentas bancarias, como los id de las cuentas, nombre del cliente y las tarjetas que maneja.
 
 entonces escribiendo codigo se veria asi en JS:
 
@@ -40,19 +40,19 @@ entonces escribiendo codigo se veria asi en JS:
 let instance;
 
 class Bank {
-    constructor({ 
+    constructor({
         bankCapital,
         name,
-        infoBankAccount = [], // [{"id": "1234", "money": 500}]
+        infoBankAccount = [], // [{"id": "1234", "client": "{}"}]
     }) {
-        if(instance) {
+        if (instance) {
             throw new Error("You can only create one instance!");
         }
         instance = this;
         this.name = name;
-        this.infoBank = { 
-            quantityAccount: 0, 
-            bankCapital: bankCapital 
+        this.infoBank = {
+            quantityAccount: 0,
+            bankCapital: bankCapital,
         };
         this.infoBankAccount = infoBankAccount;
     }
@@ -62,15 +62,14 @@ class Bank {
         return objectToArray;
     }
 
-    addInfoBankAccount({id, client, quantityMoney}) {
-        const info = { id, client, quantityMoney };
+    addInfoBankAccount({ id, client }) {
+        const info = { id, client };
         this.infoBankAccount.push(info);
-        this.incrementAccountsAndCapital(quantityMoney);
+        this.incrementAccounts();
     }
 
-    incrementAccountsAndCapital (money) {
+    incrementAccounts() {
         this.infoBank.quantityAccount++;
-        this.infoBank.bankCapital += money;
     }
 }
 
@@ -98,18 +97,22 @@ Un banco tiene muchas cuentas bancarias de distintos clientes, con diferente can
 ```javascript
 //BankAccount.js
 class BankAccount {
-    constructor({ quantityMoney, client, id }) {
-        this.quantityMoney = quantityMoney;
+    constructor({ client, id }) {
         this.client = client;
         this.id = id;
     }
+    #quantityMoney;
 
-    quantityMoney() {
-        return this.quantityMoney;
+    getBalance() {
+        return this.#quantityMoney;
+    }
+
+    setBalance(val) {
+        this.#quantityMoney = val;
     }
 
     depositMoney(money) {
-        return (this.quantityMoney += money);
+        return (this.#quantityMoney += money);
     }
 }
 
@@ -119,20 +122,21 @@ module.exports = BankAccount;
 const BankAccount = require('../models/Prototype/BankAccount.js');
 
 const bankAccountOne = new BankAccount({
-	quantityMoney: 500,
-	nameClient:  "Leosh",
+	name:  "Leosh",
 	id: "1"
 });
+bankAccountOne.setBalance(500);
 Bank.addInfoBankAccount(bankAccountOne);
+
 const bankAccountTwo = new BankAccount({
-	quantityMoney: 800,
-	nameClient: "Camil",
+	name: "Camila",
 	id: "2"
 });
+bankAccountTwo.setBalance(800);
 Bank.addInfoBankAccount(bankAccountTwo);
 Bank.infoBankAccount;
 ```
-Como podemos observar podemos instanciar varias veces la clase, sin ningún tipo de error, siempre y cuando coloquemos la información colocada sea la misma que utilizaremos en la clase, lo unico que ha cambiado de todo esto son los valores de las propiedades, el resto es como una copia del original.
+Como podemos observar podemos instanciar varias veces la clase, sin ningún tipo de error, siempre y cuando coloquemos la misma información que utilizaremos en la clase, lo unico que ha cambiado de todo esto son los valores de las propiedades, el resto es como una copia del original.
 
 ## Factory
 Podemos crear objetos mediante una interfaz de fabrica, sin necesidad de especificar una clase como concreta, antes por el contrario dependiendo el valor de la propiedad creara una clase especifica. Esto se hace con el fin de no utilizar tantas veces la palabra reservada `new`.
@@ -234,24 +238,24 @@ const BankAccount = require('../models/Prototype/BankAccount.js');
 
 const cardFactory = new Cardfactory();
 
-    const infoOne = {
-        quantityMoney: 500,
-        client: {
-            name: "Leosh",
-            typeCard: cardFactory.createCard({typeCard: 'Debit'}),
-        },
-        id: "1",
-    };
-    const bankAccountOne = new BankAccount(infoOne);
+const infoOne = {
+	client: {
+		name: "Leosh",
+		typeCard: cardFactory.createCard({typeCard: 'Debit'}),
+	},
+	id: "1",
+};
+bankAccountOne.setBalance(500);
+const bankAccountOne = new BankAccount(infoOne);
 
-    const bankAccountTwo = new BankAccount({
-        quantityMoney: 800,
-        client: {
-            name: "Camil",
-            typeCard: cardFactory.createCard({ typeCard: "Credit" }),
-        },
-        id: "2",
-    });
+const bankAccountTwo = new BankAccount({
+	client: {
+		name: "Camila",
+		typeCard: cardFactory.createCard({ typeCard: "Credit" }),
+	},
+	id: "2",
+});
+bankAccountTwo.setBalance(800);
 ```
 
 Lo primero que hacemos es crear las clases de las tarjetas, que sera una clase para tarjeta de debito y una para tarjeta de credito. Despues de esto crearemos la clase fabrica, en esta haremos una funcion `createCard` para crear los objetos, aqui se decidira segun el `typeCard` que tipo de clase se instanciara. Ya por ultimo simplemente se instancia una vez la fabrica, y cada vez que se necesite instanciar un objeta se llama la funcion de la fabrica. Ej: Primero se instancia `const cardFactory = new Cardfactory();`, despues se llama `typeCard: cardFactory.createCard({ typeCard: "Credit" })`.
@@ -563,5 +567,154 @@ Los patrones de comportamiento tratan con algoritmos y la asignación de respons
 - [Command](https://github.com/Nikos1010/Design_Patterns#command)
 
 ## Observer
+Este es un patrón de diseño que permite definir un mecanismo de suscripción para notificar a varios objetos sobre cualquier evento que le suceda al objeto que están observando.
+
+Con lo dicho, es simplemente un patrón encargado de observar un objeto, para que según el cambio que esten esperando que pase, ellos se encargarán de notificar esto a otros objetos, observemos un ejemplo:
+
+Según los cambios que se hagan en las cuentas bancarias, como lo es ingresar un deposito en la cuenta bancaria, o configurar la cantidad de dinero que tiene la cuenta bancaria, para esto se mostrara un mensaje en consola, sobre este cambio.
+
+```javascript
+//ObserverList.js
+class ObserverList {
+    constructor() {
+        this.observerList = [];
+    }
+
+    add(obj) {
+        return this.observerList.push(obj);
+    }
+
+    count() {
+        return this.observerList.length;
+    }
+
+    get(index) {
+        if(index > -1) {
+            return this.observerList[index];
+        }
+    }
+
+    indexOf(obj) {
+        this.observerList.forEach((observer, index) => {
+            if(observer === obj){
+                return index;
+            }
+        });
+        return -1;
+    }
+
+    removeAt(index) {
+        this.observerList.splice(index, 1);
+    }
+}
+
+class Observer {
+    notify(subject){
+        console.log(`Cambio: ${subject}`);
+    }
+}
+
+exports.ObserverList = ObserverList;
+exports.Observer = Observer;
+
+//Subject.js
+const { ObserverList } = require('./ObserverList.js');
+
+class Subject {
+    constructor() {
+        this.observers = new ObserverList();
+    }
+
+    addObserver(observer) {
+        this.observers.add(observer);
+    }
+
+    removeObserver(observer) {
+        this.observers.removeAt(this.observers.indexOf(observer, 0));
+    }
+
+    notify(context) {
+        this.observers.observerList.forEach((_, index) => {
+            this.observers.get(index).notify(context);
+        });
+    }
+}
+
+module.exports = Subject;
+
+//BankAccountSubject.js
+const Subject = require("./Subject");
+
+class BankAccountSubject extends Subject {
+    constructor({ client, id }) {
+        super();
+        this.client = client;
+        this.id = id;
+    }
+    #quantityMoney;
+
+    getBalance() {
+        return this.#quantityMoney;
+    }
+
+    setBalance(val) {
+        this.notify("money was changed");
+        this.#quantityMoney = val;
+    }
+
+    depositMoney(money) {
+        this.notify("money was deposited");
+        return (this.#quantityMoney += money);
+    }
+
+    notify(context) {
+        super.notify(context);
+    }
+}
+
+module.exports = BankAccountSubject;
+
+//bank.js
+const { Observer } = require('../Behavioral/Observer/ObserverList.js');
+const BankAccountSubject = require('../Behavioral/Observer/BankAccountSubject.js');
+const Cardfactory = require('../models/Factory/Factory.js');
+
+const cardFactory = new Cardfactory();
+
+const bankAccountThree = new BankAccountSubject({
+client: {
+		name: "Uver",
+		typeCard: cardFactory.createCard({ typeCard: "Credit" }),
+	},
+	id: "2",
+});
+const observerOne = new Observer();
+const observerTwo = new Observer();
+const observerThree = new Observer();
+bankAccountThree.addObserver(observerOne);
+bankAccountThree.addObserver(observerTwo);
+bankAccountThree.addObserver(observerThree);
+
+bankAccountThree.setBalance(500);
+bankAccountThree.depositMoney(300);
+
+const bankAccountFour = new BankAccountSubject({
+	client: {
+		name: "June",
+		typeCard: cardFactory.createCard({ typeCard: "Debit" }),
+	},
+	id: "2",
+});
+const observerFour = new Observer();
+const observerFive = new Observer();
+bankAccountFour.addObserver(observerFour);
+bankAccountFour.addObserver(observerFive);
+bankAccountFour.addObserver(observerThree);
+
+bankAccountFour.setBalance(1000);
+bankAccountFour.depositMoney(200);
+```
+
+Como podemos analizar en el anterior ejercicio, tenemos unos observadores que se encargaran de estar constantemente observando los cambios del objeto, cada que hay un cambio estos notificaran a otro objeto (En el ejemplo se muestra por consola), para que el observador vigile, debe estar suscrito al sujeto a vigilar, si no, nunca lo vigilara.
 
 ## Command

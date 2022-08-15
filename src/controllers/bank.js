@@ -1,3 +1,5 @@
+const BankAccountSubject = require('../Behavioral/Observer/BankAccountSubject.js');
+const { Observer } = require('../Behavioral/Observer/ObserverList.js');
 const AbstractCardFactory = require('../models/Factory/AbstractFactory.js');
 const Cardfactory = require('../models/Factory/Factory.js');
 const BankAccount = require('../models/Prototype/BankAccount.js');
@@ -15,7 +17,6 @@ exports.getInfoBankAccount = (req, res) => {
     const cardFactory = new Cardfactory();
 
     const infoOne = {
-        quantityMoney: 500,
         client: {
             name: "Leosh",
             typeCard: cardFactory.createCard({typeCard: 'Debit'}),
@@ -23,16 +24,17 @@ exports.getInfoBankAccount = (req, res) => {
         id: "1",
     };
     const bankAccountOne = new BankAccount(infoOne);
+    bankAccountOne.setBalance(500);
     Bank.addInfoBankAccount(bankAccountOne);
     
     const bankAccountTwo = new BankAccount({
-        quantityMoney: 800,
         client: {
-            name: "Camil",
+            name: "Camila",
             typeCard: cardFactory.createCard({ typeCard: "Credit" }),
         },
         id: "2",
     });
+    bankAccountTwo.setBalance(800);
     Bank.addInfoBankAccount(bankAccountTwo);
     res.json(Bank.infoBankAccount);
 }
@@ -50,4 +52,45 @@ exports.getCards = (req, res) => {
     });
     const allCards = [debitCardOne, creditCardOne];
     res.json(allCards);
+}
+
+exports.getObservers = (req, res) => {
+    const cardFactory = new Cardfactory();
+
+    const bankAccountThree = new BankAccountSubject({
+        client: {
+            name: "Uver",
+            typeCard: cardFactory.createCard({ typeCard: "Credit" }),
+        },
+        id: "2",
+    });
+    const observerOne = new Observer();
+    const observerTwo = new Observer();
+    const observerThree = new Observer();
+    bankAccountThree.addObserver(observerOne);
+    bankAccountThree.addObserver(observerTwo);
+    bankAccountThree.addObserver(observerThree);
+
+    bankAccountThree.setBalance(500);
+    bankAccountThree.depositMoney(300);
+
+    const bankAccountFour = new BankAccountSubject({
+        client: {
+            name: "June",
+            typeCard: cardFactory.createCard({ typeCard: "Debit" }),
+        },
+        id: "2",
+    });
+    const observerFour = new Observer();
+    const observerFive = new Observer();
+    bankAccountFour.addObserver(observerFour);
+    bankAccountFour.addObserver(observerFive);
+    bankAccountFour.addObserver(observerThree);
+
+    bankAccountFour.setBalance(1000);
+    bankAccountFour.depositMoney(200);
+
+    const allBankAccount = [bankAccountThree.client, bankAccountFour.client];
+
+    res.json(allBankAccount);
 }
