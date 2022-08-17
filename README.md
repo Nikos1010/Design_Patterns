@@ -801,3 +801,4 @@ console.log(Noith);
 Noith.undo();
 console.log(Noith);
 ```
+Como podemos notar el patrón command se encarga de transpasar una funcionalidad simple a un objeto, con el objetivo que se pueda utilizar en varias clases, también para que la clase tenga un encapsulamiento de las operaciones que puede hacer, simplemente se vera la función `executeCommand` y `undo`, en donde se puede traer cualquier tipo de comando, desde que este ya este definido anteriormente. Esto también ayuda que la clase no tenga muchas funcionalidades dentro suyo que hagan distintas tareas, si no por el contrario encargarse especificamente de sus funciones primordiales, y delegar esas funciones simples a otro objeto.
